@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
-const Formulario = () => {
+const Formulario = ({ addApoiment }) => {
     /*
         remember that useState let us change the state of a react component, this is the hooks approach
     */
@@ -18,27 +19,52 @@ const Formulario = () => {
        form inputs change handler function, where we will update the state
    */
     const handleInputChange = e => {
+        // e.target.name tiene el nombre del campo que se esta modificando
+        // verificar inputs que tienen el campo name
         setAppoiment({
             ...appoiment,
             [e.target.name]: e.target.value
         })
     }
     /*
-        get all data from state appoiment
-    */
-    const { pet, owner, date, time, symptoms } = appoiment
-    /*
         submit appoiment with all the form data/state
     */
    const handleFormSubmit = e => {
        e.preventDefault()
-       setError(validateAppoimentState())
-       console.log(validateAppoimentState())
+       const isInvalidAppoimentState = validateAppoimentState()
+       setError(isInvalidAppoimentState)
+       if (!isInvalidAppoimentState) {
+            appoiment.id = uuidv4()
+            addApoiment(appoiment)
+            clearState()
+       }
+
    }
 
    const validateAppoimentState = () => {
        return (pet.trim() === '' || owner.trim() === '' || date.trim() === '' || time.trim() === '' || symptoms.trim() === '')
    }
+
+   const clearState = () => {
+       /*
+            actualizamos el state y limpiamos todos sus valores
+            como los inputs estan leyendo cada uno un valor del state
+            react detecta el cambio en el state y vuelve a renderear
+            cada input
+       */
+        setAppoiment({
+            pet: '',
+            owner: '',
+            date: '',
+            time: '',
+            symptoms: ''
+        })
+   }
+
+   /*
+        get all data from state appoiment
+    */
+   const { pet, owner, date, time, symptoms } = appoiment
 
     return (
         <Fragment>
